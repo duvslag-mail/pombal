@@ -39,14 +39,15 @@ in {
 				settings.main = {
 					myorigin = "$mydomain";
 					myhostname = cfg.hostname;
-					virtual_transport = "lmtp:unix:private/dovecot-lmtp";
+					virtual_mailbox_domains = [ "$mydomain" ];
+					virtual_transport = "lmtp:unix:/var/spool/postfix/private/dovecot-lmtp";
 
 					smtpd_tls_cert_file = "${sslCertDir}/fullchain.pem";
 					smtpd_tls_key_file = "${sslCertDir}/key.pem";
 					smtpd_tls_security_level = "may";
 
 					smtpd_sasl_type = "dovecot";
-					smtpd_sasl_path = "private/auth";
+					smtpd_sasl_path = "/var/spool/postfix/private/auth";
 					smtpd_sasl_auth_enable = true;
 				};
 			};
@@ -86,14 +87,14 @@ in {
 					# https://doc.dovecot.org/2.4.5/howto/lmtp/postfix.html
 					"service lmtp"."unix_listener /var/spool/postfix/private/dovecot-lmtp" = {
 						user = "postfix";
-						mode = 0600;
+						mode = "0600";
 						group = "postfix";
 					};
 
 					# https://doc.dovecot.org/2.4.5/howto/sasl/postfix.html
 					"service auth" = {
 						"unix_listener /var/spool/postfix/private/auth" = {
-							mode = 0660;
+							mode = "0660";
 							user = "postfix";
 							group = "postfix";
 						};
